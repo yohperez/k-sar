@@ -1,0 +1,32 @@
+# ============================================
+# K-asar - Dependencias del Proyecto
+# ============================================
+
+# --- Manipulación y análisis de datos ---
+pandas>=2.2.0
+numpy>=1.26.0
+
+# --- Visualización exploratoria (EDA) ---
+matplotlib>=3.8.0
+seaborn>=0.13.0
+
+# --- Preprocesamiento, escalado, PCA y clustering ---
+scikit-learn>=1.4.0
+scipy>=1.12.0
+
+# --- Reducción de dimensionalidad avanzada (opcional, complementa PCA) ---
+umap-learn>=0.5.5
+
+# --- Entorno de desarrollo con notebooks ---
+notebook>=7.1.0
+ipykernel>=6.29.0
+jupyterlab>=4.1.0
+
+# --- Visualización interactiva (PCA 2D/3D, clusters) ---
+plotly>=5.19.0
+
+# --- Producto final: demo interactiva ---
+streamlit>=1.32.0
+
+# --- Utilidades de calidad de código ---
+python-dotenv>=1.0.0
