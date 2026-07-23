@@ -94,7 +94,8 @@ La app se redeploya automáticamente cuando hay cambios en `src/` en la rama `ma
 
 | Rol | GitHub |
 |-----|--------|
-| **Contexto de Negocio & EDA** | [@yohperez](https://github.com/yohperez) |
+| **Contexto de Negocio** | [@yohperez](https://github.com/yohperez) |
+| **Análisis Exploratorio (EDA)** | [@JCRbit](https://github.com/JCRbit) |
 | **Preprocesamiento de Datos** | [@luiselallali18-hub](https://github.com/luiselallali18-hub) |
 | **Reducción de Dimensionalidad (PCA) & Modelado** | [@Isabela-Tellez](https://github.com/Isabela-Tellez) |
 | **Clustering y Modelo** | [@SiR0N](https://github.com/SiR0N) |
