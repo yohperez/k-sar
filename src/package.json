@@ -1,0 +1,16 @@
+{
+  "name": "k-asar-dashboard",
+  "version": "2.0.0",
+  "description": "K-asar — Stellar Data Clustering dashboard (proyecto PatternFinder, Módulo III)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "compression": "^1.7.4",
+    "express": "^4.19.2"
+  }
+}

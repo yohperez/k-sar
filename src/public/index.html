@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>K-asar — Stellar Data Clustering</title>
+<meta name="description" content="K-asar: clustering no supervisado sobre datos fotométricos y de redshift del SDSS17 para priorizar tiempo de espectroscopía. Proyecto PatternFinder, Módulo III.">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ================= NAV ================= -->
+<header class="topnav" id="topnav">
+  <div class="nav-inner">
+    <a href="#hero" class="brand">
+      <img src="assets/logo-transparent.png" alt="K-asar" class="brand-mark">
+      <span class="brand-word">K-asar</span>
+    </a>
+    <nav class="nav-links" id="navLinks">
+      <a href="#problema" data-label="Problema">00 Negocio</a>
+      <a href="#datos" data-label="Datos">01 Datos</a>
+      <a href="#preprocesamiento" data-label="Preproceso">02 Preproceso</a>
+      <a href="#pca" data-label="PCA">03 PCA &amp; K</a>
+      <a href="#clustering" data-label="Clustering">04 Modelo</a>
+      <a href="#negocio" data-label="Negocio">05 Negocio</a>
+      <a href="#demo" data-label="Demo">Demo</a>
+      <a href="#etica" data-label="Ética">Ética</a>
+      <a href="#equipo" data-label="Equipo">Equipo</a>
+    </nav>
+    <button class="nav-toggle" id="navToggle" aria-label="Abrir menú">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<section class="hero" id="hero">
+  <div class="hero-bg" aria-hidden="true"></div>
+  <div class="hero-inner">
+    <img src="assets/logo-transparent.png" alt="K-asar — Stellar Data Clustering" class="hero-logo">
+    <p class="hero-eyebrow">DataScope Solutions &middot; Meridian Sky Survey Consortium</p>
+    <h1 class="hero-title">K-asar</h1>
+    <p class="hero-sub">Descubriendo estrellas, galaxias y cuásares en 100,000 objetos del SDSS17 &mdash; sin usar jamás la etiqueta real durante el entrenamiento.</p>
+    <div class="hero-stats" id="heroStats">
+      <div class="hstat"><span class="hstat-num">99,999</span><span class="hstat-label">objetos limpios</span></div>
+      <div class="hstat"><span class="hstat-num">10</span><span class="hstat-label">features (incluye redshift)</span></div>
+      <div class="hstat"><span class="hstat-num">4</span><span class="hstat-label">algoritmos comparados</span></div>
+      <div class="hstat"><span class="hstat-num">3</span><span class="hstat-label">clusters ganadores (K-Means)</span></div>
+    </div>
+    <a href="#problema" class="hero-cta">Explorar el pipeline ↓</a>
+  </div>
+</section>
+
+<main>
+
+<!-- ================= 00 NEGOCIO ================= -->
+<section class="section" id="problema">
+  <div class="section-inner split">
+    <div class="col">
+      <p class="folio">Notebook 00 &middot; Javi</p>
+      <h2>Fotometría barata, espectroscopía cara</h2>
+      <p class="lead">Un survey como el SDSS fotografía el cielo y mide, para cada objeto, cinco magnitudes de brillo (<code>u, g, r, i, z</code>) — esto es <strong>barato</strong> y se hace automáticamente para millones de objetos.</p>
+      <p class="lead">Pero confirmar si un objeto es <strong>estrella</strong>, <strong>galaxia</strong> o <strong>cuásar</strong> requiere <strong>espectroscopía</strong>: apuntar el telescopio a ese objeto específico. Recurso caro y escaso, muy disputado entre equipos de investigación.</p>
+      <ul class="checklist">
+        <li>La pregunta de negocio: &iquest;podemos agrupar objetos usando solo el dato barato, para priorizar dónde gastar el recurso caro?</li>
+        <li>Un objeto recién fotografiado no tiene todavía clase real — el pipeline debe actuar como si esa etiqueta no existiera.</li>
+        <li><code>class</code> se retira del modelado y se reserva únicamente para validar el resultado al final.</li>
+      </ul>
+    </div>
+    <div class="col stat-stack">
+      <div class="stat"><span class="stat-num">100,000</span><span class="stat-label">objetos observados</span></div>
+      <div class="stat"><span class="stat-num">18</span><span class="stat-label">columnas crudas</span></div>
+      <div class="stat"><span class="stat-num">0</span><span class="stat-label">etiquetas usadas al entrenar</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 01 DATOS / EDA ================= -->
+<section class="section alt" id="datos">
+  <div class="section-inner">
+    <p class="folio">Notebook 01 &middot; Javi</p>
+    <h2>Los datos: 6 variables continuas, sin errores de sensor</h2>
+    <p class="lead">Cinco bandas fotométricas más el <code>redshift</code> (que en este pipeline <strong>sí se conserva</strong> como feature) — se descartan solo los metadatos de instrumento y las coordenadas celestes.</p>
+    <div class="grid-2">
+      <div class="panel">
+        <h3>Distribución de magnitudes y redshift</h3>
+        <canvas id="chartHistograms" height="220"></canvas>
+        <p class="cap">Se excluyeron del cálculo los registros con magnitud &le; 0 (error de instrumento).</p>
+      </div>
+      <div class="panel">
+        <h3>Correlación entre variables continuas</h3>
+        <div id="corrHeatmap" class="heatmap"></div>
+        <p class="cap">Alta correlación entre bandas fotométricas → base para PCA (Notebook 03).</p>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="panel">
+        <h3>Distribución real de clases <span class="tag">solo contexto, no se usa para entrenar</span></h3>
+        <canvas id="chartClassCounts" height="180"></canvas>
+      </div>
+      <div class="panel callout-panel">
+        <h3>Un valor no es un error del cielo, es un error del sensor</h3>
+        <p>Se detectó <strong>1 fila</strong> con magnitud &le; 0 &mdash; un código de fallo de instrumento, no un objeto astrofísico real. Se elimina, no se conserva: la diferencia entre <em>"error a corregir"</em> y <em>"outlier con significado"</em> es una decisión explícita, no automática.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 02 PREPROCESAMIENTO ================= -->
+<section class="section" id="preprocesamiento">
+  <div class="section-inner">
+    <p class="folio">Notebook 02 &middot; Luis</p>
+    <h2>Preprocesamiento: de 18 columnas a 10 features limpias</h2>
+    <div class="pipeline-flow" id="pipelineFlow"></div>
+    <div class="grid-2">
+      <div class="panel">
+        <h3>Columnas descartadas y por qué</h3>
+        <table class="mini-table">
+          <tr><td><code>obj_ID, spec_obj_ID</code></td><td>identificadores, no predictivos</td></tr>
+          <tr><td><code>run_ID, rerun_ID, cam_col, field_ID, plate, MJD, fiber_ID</code></td><td>metadatos de instrumento — riesgo de sesgo instrumental</td></tr>
+          <tr><td><code>alpha, delta</code></td><td>posición celeste, no distingue el tipo de objeto</td></tr>
+          <tr><td><code>class</code></td><td>fuga de información — es la propia respuesta que buscamos predecir</td></tr>
+        </table>
+        <p class="note"><strong>Nota:</strong> a diferencia de otros pipelines de este tipo, aquí <code>redshift</code> se conserva como feature — también requiere espectroscopía, pero el equipo decidió incluirlo como señal de entrada válida en lugar de reservarlo solo para validación.</p>
+      </div>
+      <div class="panel">
+        <h3>Ingeniería de variables: índices de color</h3>
+        <p>Las <em>diferencias</em> entre bandas son más informativas que las magnitudes absolutas:</p>
+        <div class="formula-list">
+          <div class="formula"><span>color_ug</span> = u &minus; g</div>
+          <div class="formula"><span>color_gr</span> = g &minus; r</div>
+          <div class="formula"><span>color_ri</span> = r &minus; i</div>
+          <div class="formula"><span>color_iz</span> = i &minus; z</div>
+        </div>
+        <p class="note">Escalado final con <code>RobustScaler</code> (mediana y rango intercuartílico) — más resistente a outliers que un escalado estándar.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 03 PCA & K ================= -->
+<section class="section alt" id="pca">
+  <div class="section-inner">
+    <p class="folio">Notebook 03 &middot; Isabella</p>
+    <h2>PCA y selección del K óptimo</h2>
+    <p class="lead">Con 10 features de entrada, PCA al 90% de varianza retiene 4 componentes. El modelo final de producción reoptimiza al 95% (5 componentes) para una separación ligeramente mejor.</p>
+    <div class="grid-3">
+      <div class="panel">
+        <h3>Varianza explicada acumulada</h3>
+        <canvas id="chartPcaVariance" height="200"></canvas>
+        <p class="cap"><span id="pcaVarText"></span></p>
+      </div>
+      <div class="panel">
+        <h3>Método del codo</h3>
+        <canvas id="chartElbow" height="200"></canvas>
+      </div>
+      <div class="panel">
+        <h3>Coeficiente de silueta</h3>
+        <canvas id="chartSilhouette" height="200"></canvas>
+      </div>
+    </div>
+    <div class="callout-panel wide">
+      <p><strong>K = 3</strong> se eligió únicamente con criterios matemáticos (codo + silueta), sin mirar la clase real. Que coincida con las 3 categorías astrofísicas conocidas es justo lo que se valida más adelante, no un supuesto de partida.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 04 CLUSTERING ================= -->
+<section class="section" id="clustering">
+  <div class="section-inner">
+    <p class="folio">Notebook 04 &middot; Josema</p>
+    <h2>Cuatro algoritmos comparados, un ganador</h2>
+    <div class="grid-2">
+      <div class="panel">
+        <h3>Objetos proyectados en PCA (coloreados por cluster de K-Means)</h3>
+        <canvas id="chartScatter" height="280"></canvas>
+      </div>
+      <div class="panel">
+        <h3>Tamaño de cada cluster (K-Means, ganador)</h3>
+        <canvas id="chartClusterSizes" height="280"></canvas>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:1.6em;">
+      <h3>Comparación contra la clase real (nunca usada al entrenar)</h3>
+      <canvas id="chartModelComparison" height="220"></canvas>
+      <p class="cap">DBSCAN colapsó casi todo en una sola megaclase (ARI&asymp;0.006). K-Means ofrece el mejor equilibrio entre las 3 clases y el mejor desempeño en QSO (F1=0.81).</p>
+    </div>
+    <p class="note center">K-Means (K=3) se lleva a producción por su balance entre clases; GMM tiene mejor NMI y precisión en galaxias, Jerárquico el ARI más alto pero falla en estrellas, DBSCAN no encontró estructura real con estos hiperparámetros.</p>
+  </div>
+</section>
+
+<!-- ================= 05 NEGOCIO ================= -->
+<section class="section alt" id="negocio">
+  <div class="section-inner">
+    <p class="folio">Notebook 05 &middot; Yohanna</p>
+    <h2>Traducción al negocio: de clusters a categorías de triage</h2>
+    <div class="grid-2">
+      <div class="panel">
+        <h3>Composición real de cada cluster</h3>
+        <canvas id="chartCrosstab" height="260"></canvas>
+        <p class="cap">Validación honesta contra la clase real — <strong>Índice de Rand Ajustado = <span id="ariText"></span></strong>: concordancia real pero moderada, no un clasificador perfecto.</p>
+      </div>
+      <div class="panel">
+        <h3>&iquest;Por qué esto es un resultado útil?</h3>
+        <p>Un ARI moderado es exactamente lo esperable si la fotometría es <em>parcialmente</em> informativa pero no reemplaza la espectroscopía. El producto correcto no es un "clasificador automático" &mdash; es una <strong>herramienta de triage</strong> que prioriza qué observar primero.</p>
+      </div>
+    </div>
+    <div class="persona-grid" id="personaGrid"></div>
+  </div>
+</section>
+
+<!-- ================= DEMO ================= -->
+<section class="section" id="demo">
+  <div class="section-inner">
+    <p class="folio">Demo en vivo</p>
+    <h2>Triage de un objeto nuevo</h2>
+    <p class="lead">Esta demo reproduce, en el navegador, el pipeline entrenado real (RobustScaler + PCA 95% + K-Means) &mdash; mové los sliders para simular las magnitudes y el redshift de un objeto recién observado.</p>
+    <div class="demo-grid">
+      <div class="panel demo-controls">
+        <div class="slider-row" data-feat="u"><label>u <span class="sval">22.0</span></label><input type="range" min="15" max="30" step="0.1" value="22.0"></div>
+        <div class="slider-row" data-feat="g"><label>g <span class="sval">21.0</span></label><input type="range" min="14" max="29" step="0.1" value="21.0"></div>
+        <div class="slider-row" data-feat="r"><label>r <span class="sval">20.5</span></label><input type="range" min="13" max="28" step="0.1" value="20.5"></div>
+        <div class="slider-row" data-feat="i"><label>i <span class="sval">20.2</span></label><input type="range" min="12" max="28" step="0.1" value="20.2"></div>
+        <div class="slider-row" data-feat="z"><label>z <span class="sval">20.0</span></label><input type="range" min="11" max="27" step="0.1" value="20.0"></div>
+        <div class="slider-row" data-feat="redshift"><label>redshift <span class="sval">0.50</span></label><input type="range" min="-0.01" max="3" step="0.01" value="0.50"></div>
+        <div class="demo-presets">
+          <button data-preset="galaxy">Perfil típico galaxia</button>
+          <button data-preset="qso">Perfil típico QSO</button>
+          <button data-preset="star">Perfil típico estrella</button>
+        </div>
+      </div>
+      <div class="panel demo-result" id="demoResult">
+        <span class="dr-label">Cluster asignado</span>
+        <span class="dr-value" id="drCluster">—</span>
+        <span class="dr-action" id="drAction">Movés un slider para correr el modelo.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ÉTICA ================= -->
+<section class="section alt narrow" id="etica">
+  <div class="section-inner">
+    <p class="folio">Notebook 05 &middot; Yohanna</p>
+    <h2>Análisis ético</h2>
+    <p class="lead">Automatizar qué se observa no es neutral — moldea qué descubre la ciencia y qué queda sin observar.</p>
+    <div class="grid-2 ethics-grid">
+      <div class="ethic-card"><span class="e-title">Sesgo de descubrimiento</span><span class="e-body">Un triage mal calibrado puede filtrar hacia abajo exactamente los objetos más atípicos &mdash; el hallazgo más valioso en astronomía.</span></div>
+      <div class="ethic-card"><span class="e-title">Sesgo instrumental</span><span class="e-body">Se descartaron deliberadamente las columnas de instrumento para no aprender patrones del telescopio en vez del objeto.</span></div>
+      <div class="ethic-card"><span class="e-title">Desempeño desigual entre clases</span><span class="e-body">STAR es sistemáticamente la clase peor identificada en los 4 modelos (F1 entre 0.31 y 0.50) &mdash; sus recomendaciones merecen menos confianza.</span></div>
+      <div class="ethic-card"><span class="e-title">Sin verdad de referencia futura</span><span class="e-body">El ARI se validó contra el archivo histórico; para objetos nuevos, la calidad solo se confirma con futuras confirmaciones.</span></div>
+    </div>
+    <div class="callout-panel wide">
+      <p>Salvaguardas: usar el triage solo para <strong>ordenar una cola</strong>, nunca para descartar sin revisión humana; comunicar la menor confiabilidad en candidatos a estrella; re-validar con cada nuevo lote de confirmaciones; publicar el perfil de cada cluster para auditoría del comité científico.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= EXTRAPOLACIÓN ================= -->
+<section class="section" id="extrapolacion">
+  <div class="section-inner split">
+    <div class="col">
+      <p class="folio">Más allá del cielo</p>
+      <h2>El mismo patrón, otros dominios</h2>
+      <ul class="checklist">
+        <li><strong>Salud:</strong> triage de qué pacientes necesitan una prueba diagnóstica cara, usando señales baratas.</li>
+        <li><strong>Manufactura:</strong> priorizar qué lotes necesitan inspección de calidad costosa.</li>
+        <li><strong>Ciberseguridad:</strong> priorizar qué alertas merecen revisión de un analista senior.</li>
+      </ul>
+    </div>
+    <div class="col">
+      <p class="folio">&nbsp;</p>
+      <h2>Situaciones de negocio similares</h2>
+      <ul class="checklist">
+        <li>Banca: qué solicitudes de crédito requieren revisión manual completa.</li>
+        <li>Aerolíneas: qué motores requieren inspección de mantenimiento anticipada.</li>
+        <li>Soporte técnico: qué tickets requieren un ingeniero senior.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= EQUIPO ================= -->
+<section class="section alt" id="equipo">
+  <div class="section-inner">
+    <p class="folio">El equipo</p>
+    <h2>El equipo detrás de K-asar</h2>
+    <div class="team-grid">
+      <div class="team-card"><span class="t-num">00&ndash;01</span><span class="t-name">Javi</span><span class="t-role">Negocio &amp; EDA</span></div>
+      <div class="team-card"><span class="t-num">02</span><span class="t-name">Luis</span><span class="t-role">Preprocesamiento</span></div>
+      <div class="team-card"><span class="t-num">03</span><span class="t-name">Isabella</span><span class="t-role">PCA &amp; Selección de K</span></div>
+      <div class="team-card"><span class="t-num">04</span><span class="t-name">Josema</span><span class="t-role">Clustering &amp; Modelo</span></div>
+      <div class="team-card highlight"><span class="t-num">05</span><span class="t-name">Yohanna</span><span class="t-role">Negocio, Demo &amp; Ética</span></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <img src="assets/logo-transparent.png" alt="K-asar" class="footer-logo">
+    <p>K-asar &middot; PatternFinder, Módulo III &middot; DataScope Solutions &middot; Dataset: Stellar Classification SDSS17 (fedesoriano / Kaggle, dominio público) &middot; <a href="https://github.com/yohperez/k-sar" target="_blank" rel="noopener">github.com/yohperez/k-sar</a></p>
+  </div>
+</footer>
+
+<script src="js/vendor/chart.umd.min.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
