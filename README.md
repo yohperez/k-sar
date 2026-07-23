@@ -8,7 +8,7 @@
 
 ## Descripción del Proyecto
 
-Proyecto de segmentación no supervisada para análisis y agrupamiento de datos estelares (astronomía). El objetivo es identificar grupos naturales en el espacio de características espectrales del **Stellar Classification Dataset (SDSS17)**.
+Proyecto de segmentación no supervisada para análisis y agrupamiento de datos estelares (astronomía). El objetivo es identificar grupos naturales en el espacio de características espectrales del dataset de clasificación estelar SDSS17.
 
 **Características principales:**
 - 📊 **Pipeline completo** de ML: preprocesamiento, reducción de dimensionalidad (PCA), clustering (K-Means)
@@ -37,25 +37,27 @@ data/stellar_classification.csv
 
 ```
 k-sar/
-├── notebooks/                      # Pipeline de ML (Jupyter Notebooks)
-│   ├── 00_eda.ipynb               # Análisis Exploratorio de Datos
-│   ├── 01_preprocessing.ipynb      # Preprocesamiento
-│   ├── 02_dimensionality_reduction.ipynb  # PCA
-│   ├── 03_optimal_k.ipynb         # Selección del K óptimo
-│   ├── 04_clustering_model.ipynb   # Clustering y modelo
-│   └── 05_business_translation_and_ethics.ipynb  # Traducción al negocio
-├── src/                            # Dashboard interactivo (Node.js/Express)
+├── notebooks/                                  # Pipeline completo de ML (Jupyter Notebooks)
+│   ├── 00_business_case.ipynb                 # Caso de negocio y contexto del análisis
+│   ├── 01_exploratory_data_analysis.ipynb      # Análisis Exploratorio de Datos (EDA)
+│   ├── 02_data_preprocessing.ipynb             # Preprocesamiento y limpieza de datos
+│   ├── 03_dimensionality_reduction.ipynb       # Reducción de dimensionalidad con PCA
+│   ├── 04_modeling.ipynb                       # Clustering con K-Means y selección de K óptimo
+│   ├── 04_modeling_test_nopca.ipynb            # Análisis alternativo sin PCA
+│   ├── 05_business_translation_and_ethics.ipynb # Traducción al negocio, interpretabilidad y ética
+│   └── data/                                   # Datos intermedios del pipeline
+├── src/                                        # Dashboard interactivo (Node.js/Express)
 │   ├── server.js
 │   ├── package.json
-│   ├── railway.json               # Configuración de Railway
+│   ├── railway.json                            # Configuración de Railway
 │   └── public/
-│       ├── index.html             # Dashboard
+│       ├── index.html                          # Dashboard
 │       ├── css/style.css
 │       ├── js/app.js
-│       ├── data/dashboard_data.json  # Datos del modelo
+│       ├── data/dashboard_data.json            # Datos del modelo
 │       └── assets/
-├── data/                          # Datasets (descarga aquí el CSV)
-├── assets/                        # Logos y recursos
+├── data/                                       # Datasets (descarga aquí el CSV)
+├── assets/                                     # Logos y recursos
 └── README.md
 ```
 
@@ -90,13 +92,12 @@ La app se redeploya automáticamente cuando hay cambios en `src/` en la rama `ma
 
 ## Equipo de Trabajo
 
-| Rol | Responsable |
-|-----|------------|
-| **Contexto de Negocio & EDA** | Javi |
-| **Preprocesamiento de Datos** | Luis |
-| **Reducción de Dimensionalidad (PCA) & K Óptimo** | Isabella |
-| **Clustering y Modelo** | Josema |
-| **Traducción al Negocio, Demo & Ética** | Yohanna |
+| Rol | GitHub |
+|-----|--------|
+| **Contexto de Negocio & EDA** | [@yohperez](https://github.com/yohperez) |
+| **Preprocesamiento de Datos** | [@luiselallali18-hub](https://github.com/luiselallali18-hub) |
+| **Reducción de Dimensionalidad (PCA) & Modelado** | [@Isabela-Tellez](https://github.com/Isabela-Tellez) |
+| **Clustering y Modelo** | [@SiR0N](https://github.com/SiR0N) |
 
 ## Flujo de Trabajo (Pull Requests)
 
