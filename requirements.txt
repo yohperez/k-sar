@@ -25,8 +25,5 @@ jupyterlab>=4.1.0
 # --- Visualización interactiva (PCA 2D/3D, clusters) ---
 plotly>=5.19.0
 
-# --- Producto final: demo interactiva ---
-streamlit>=1.32.0
-
 # --- Utilidades de calidad de código ---
 python-dotenv>=1.0.0
