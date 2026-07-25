@@ -282,6 +282,110 @@ function renderPersonas() {
   `).join("");
 }
 
+function renderScatter3D() {
+  const container = document.getElementById("plot3d");
+  if (!container || typeof Plotly === "undefined") return;
+
+  const points = DATA.scatter_sample_3d;
+  const CLASS_COLORS = { GALAXY: "#9163F5", QSO: "#E8B34D", STAR: "#4FD8E8" };
+  const CLASS_NAMES_ES = { GALAXY: "Galaxia", QSO: "Cuásar (QSO)", STAR: "Estrella" };
+
+  function tracesFor(colorBy) {
+    if (colorBy === "cluster") {
+      return [0, 1, 2].map(c => {
+        const pts = points.filter(p => p.c === c);
+        return {
+          x: pts.map(p => p.x), y: pts.map(p => p.y), z: pts.map(p => p.z),
+          mode: "markers", type: "scatter3d", name: "Cluster " + c,
+          marker: { size: 2.2, color: CLUSTER_COLORS[c], opacity: 0.75 },
+          hovertemplate: "Cluster " + c + "<extra></extra>",
+        };
+      });
+    }
+    return ["GALAXY", "QSO", "STAR"].map(cls => {
+      const pts = points.filter(p => p.real === cls);
+      return {
+        x: pts.map(p => p.x), y: pts.map(p => p.y), z: pts.map(p => p.z),
+        mode: "markers", type: "scatter3d", name: CLASS_NAMES_ES[cls],
+        marker: { size: 2.2, color: CLASS_COLORS[cls], opacity: 0.75 },
+        hovertemplate: CLASS_NAMES_ES[cls] + "<extra></extra>",
+      };
+    });
+  }
+
+  const layout = {
+    paper_bgcolor: "rgba(0,0,0,0)",
+    plot_bgcolor: "rgba(0,0,0,0)",
+    font: { color: "#8291A8", family: "Inter, sans-serif", size: 11 },
+    margin: { l: 0, r: 0, t: 10, b: 0 },
+    legend: { orientation: "h", y: -0.02, font: { color: "#E7EBF0" } },
+    scene: {
+      xaxis: { title: "PC1", gridcolor: "rgba(231,235,240,0.12)", zerolinecolor: "rgba(231,235,240,0.2)", backgroundcolor: "rgba(0,0,0,0)" },
+      yaxis: { title: "PC2", gridcolor: "rgba(231,235,240,0.12)", zerolinecolor: "rgba(231,235,240,0.2)", backgroundcolor: "rgba(0,0,0,0)" },
+      zaxis: { title: "PC3", gridcolor: "rgba(231,235,240,0.12)", zerolinecolor: "rgba(231,235,240,0.2)", backgroundcolor: "rgba(0,0,0,0)" },
+      camera: { eye: { x: 1.5, y: 1.5, z: 1.2 } },
+    },
+  };
+
+  Plotly.newPlot(container, tracesFor("cluster"), layout, { responsive: true, displayModeBar: false });
+
+  document.querySelectorAll(".viz3d-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".viz3d-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      Plotly.react(container, tracesFor(btn.dataset.color), layout, { responsive: true, displayModeBar: false });
+    });
+  });
+}
+
+async function renderExpandedScatter3D() {
+  const container = document.getElementById("plot3dAmpliado");
+  if (!container || typeof Plotly === "undefined") return;
+
+  let traces;
+  try {
+    const res = await fetch("data/comparativa3d_ampliada.json");
+    traces = await res.json();
+  } catch (e) {
+    console.error("No se pudo cargar comparativa3d_ampliada.json", e);
+    container.innerHTML = '<p class="cap" style="padding:2em;">No se pudo cargar la visualización ampliada.</p>';
+    return;
+  }
+
+  const axisStyle = (title) => ({
+    title: { text: title, font: { size: 10, color: "#8291A8" } },
+    gridcolor: "rgba(231,235,240,0.12)",
+    zerolinecolor: "rgba(231,235,240,0.2)",
+    backgroundcolor: "rgba(0,0,0,0)",
+    tickfont: { size: 8, color: "#8291A8" },
+  });
+  const sceneStyle = (domainX, domainY) => ({
+    domain: { x: domainX, y: domainY },
+    xaxis: axisStyle("PC1"), yaxis: axisStyle("PC2"), zaxis: axisStyle("PC3"),
+    camera: { eye: { x: 1.4, y: 1.4, z: 1.1 } },
+  });
+
+  const layout = {
+    paper_bgcolor: "rgba(0,0,0,0)",
+    plot_bgcolor: "rgba(0,0,0,0)",
+    font: { color: "#8291A8", family: "Inter, sans-serif", size: 11 },
+    margin: { l: 0, r: 0, t: 40, b: 0 },
+    showlegend: false,
+    scene: sceneStyle([0.0, 0.485], [0.54, 1.0]),
+    scene2: sceneStyle([0.515, 1.0], [0.54, 1.0]),
+    scene3: sceneStyle([0.0, 0.485], [0.0, 0.46]),
+    scene4: sceneStyle([0.515, 1.0], [0.0, 0.46]),
+    annotations: [
+      { font: { size: 13, color: "#E7EBF0" }, showarrow: false, text: "<b>Datos reales (clases SDSS)</b>", x: 0.2425, xanchor: "center", xref: "paper", y: 1.0, yanchor: "bottom", yref: "paper" },
+      { font: { size: 13, color: "#E7EBF0" }, showarrow: false, text: "<b>GMM</b>", x: 0.7575, xanchor: "center", xref: "paper", y: 1.0, yanchor: "bottom", yref: "paper" },
+      { font: { size: 13, color: "#E7EBF0" }, showarrow: false, text: "<b>K-Means (ganador)</b>", x: 0.2425, xanchor: "center", xref: "paper", y: 0.46, yanchor: "bottom", yref: "paper" },
+      { font: { size: 13, color: "#E7EBF0" }, showarrow: false, text: "<b>Jerárquico (Ward)</b>", x: 0.7575, xanchor: "center", xref: "paper", y: 0.46, yanchor: "bottom", yref: "paper" },
+    ],
+  };
+
+  Plotly.newPlot(container, traces, layout, { responsive: true, displayModeBar: false });
+}
+
 // ---------------- Live demo (real model reproduced in JS) ----------------
 function predictCluster(u, g, r, i, z, redshift) {
   const mp = DATA.model_params;
@@ -363,6 +467,8 @@ async function boot() {
   renderPcaVariance();
   renderElbowSilhouette();
   renderScatter();
+  renderScatter3D();
+  renderExpandedScatter3D();
   renderClusterSizes();
   renderModelComparison();
   renderCrosstab();

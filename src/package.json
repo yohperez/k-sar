@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "compression": "^1.7.4",
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "plotly.js-gl3d-dist": "^3.7.0"
   }
 }

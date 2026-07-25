@@ -142,7 +142,7 @@
 <!-- ================= 03 PCA & K ================= -->
 <section class="section alt" id="pca">
   <div class="section-inner">
-    <p class="folio">Notebook 03 &middot; Isabella</p>
+    <p class="folio">Notebook 03 &middot; Isabela</p>
     <h2>PCA y selección del K óptimo</h2>
     <p class="lead">Con 10 features de entrada, PCA al 90% de varianza retiene 4 componentes. El modelo final de producción reoptimiza al 95% (5 componentes) para una separación ligeramente mejor.</p>
     <div class="grid-3">
@@ -182,11 +182,63 @@
       </div>
     </div>
     <div class="panel" style="margin-top:1.6em;">
+      <h3>Visualización 3D interactiva (PC1, PC2, PC3 — ~80% de la varianza)</h3>
+      <div class="viz3d-toggle">
+        <button class="viz3d-btn active" data-color="cluster">Color por cluster (K-Means)</button>
+        <button class="viz3d-btn" data-color="real">Color por clase real</button>
+      </div>
+      <div id="plot3d" class="plot3d-container"></div>
+      <p class="cap">Arrastrá para rotar, scroll para zoom. Comparar ambas vistas muestra visualmente por qué el ARI es moderado: los clusters de K-Means (izquierda) no calcan exactamente los límites de la clase real (derecha), sobre todo entre STAR y GALAXY.</p>
+    </div>
+    <div class="panel" style="margin-top:1.6em;">
       <h3>Comparación contra la clase real (nunca usada al entrenar)</h3>
       <canvas id="chartModelComparison" height="220"></canvas>
       <p class="cap">DBSCAN colapsó casi todo en una sola megaclase (ARI&asymp;0.006). K-Means ofrece el mejor equilibrio entre las 3 clases y el mejor desempeño en QSO (F1=0.81).</p>
     </div>
     <p class="note center">K-Means (K=3) se lleva a producción por su balance entre clases; GMM tiene mejor NMI y precisión en galaxias, Jerárquico el ARI más alto pero falla en estrellas, DBSCAN no encontró estructura real con estos hiperparámetros.</p>
+
+    <div class="panel" style="margin-top:1.6em;">
+      <h3>Comparativa 3D ampliada &mdash; Real, GMM, K-Means y Jerárquico, redshift ponderado (&times;44)</h3>
+      <p class="cap" style="margin:0 0 0.8em;">Los tres modelos que sí encontraron estructura, lado a lado contra la clase real en PC1&ndash;PC2&ndash;PC3, ponderando el redshift para separar mejor la nube de puntos. DBSCAN queda fuera de esta vista porque colapsó casi todo en una sola megaclase (ARI&asymp;0.006) y no aporta un panel comparable. Arrastrá cada panel para rotarlo de forma independiente; scroll para zoom.</p>
+      <div id="plot3dAmpliado" class="plot3d-container plot3d-container--wide" role="img" aria-label="Comparativa 3D de clustering: datos reales, GMM, K-Means y Jerárquico"></div>
+      <div class="viz3d-legend" id="viz3dAmpliadoLegend">
+        <span class="viz3d-legend-item"><i style="background:#2b5c8f"></i>GALAXY (real)</span>
+        <span class="viz3d-legend-item"><i style="background:#f39c12"></i>STAR (real)</span>
+        <span class="viz3d-legend-item"><i style="background:#2ecc71"></i>QSO (real)</span>
+        <span class="viz3d-legend-sep">·</span>
+        <span class="viz3d-legend-item"><i style="background:rgb(228,26,28)"></i>Clúster 1</span>
+        <span class="viz3d-legend-item"><i style="background:rgb(55,126,184)"></i>Clúster 2</span>
+        <span class="viz3d-legend-item"><i style="background:rgb(77,175,74)"></i>Clúster 3</span>
+        <span class="viz3d-legend-note">(los colores de clúster no corresponden 1:1 entre los 3 modelos ni con las clases reales)</span>
+      </div>
+      <div class="grid-2" style="margin-top:1.2em;">
+        <div class="panel" style="background:var(--bg-alt);">
+          <h3 style="font-size:0.92rem;">Qué mirar en cada panel</h3>
+          <ul class="checklist">
+            <li><strong>Datos reales</strong>: referencia — el objeto astrofísico verdadero, oculto durante el entrenamiento.</li>
+            <li><strong>GMM</strong>: fronteras probabilísticas más suaves; mejor precisión en GALAXY pero recall más bajo.</li>
+            <li><strong>K-Means</strong>: el ganador final — la nube que más se parece a la de la izquierda en conjunto.</li>
+            <li><strong>Jerárquico</strong>: buen ARI global, pero visualmente apenas separa la clase STAR del resto.</li>
+          </ul>
+        </div>
+        <div class="panel" style="background:var(--bg-alt);">
+          <h3 style="font-size:0.92rem;">Por qué ponderar el redshift &times;44</h3>
+          <p style="font-size:0.85rem; color:var(--muted); margin:0;">El <code>redshift</code> vive en una escala mucho más chica que las magnitudes fotométricas ya escaladas por PCA, así que sin ponderar queda aplastado y aporta poca separación visual. Multiplicarlo por 44 (solo para esta visualización, no para el modelo real) estira ese eje y hace visible cómo QSO se despega del resto gracias, sobre todo, a su redshift típicamente más alto.</p>
+        </div>
+      </div>
+      <p class="cap" style="margin-top:0.8em;">Comparar los cuatro cuadros confirma el diagnóstico del Notebook 04: la geometría de K-Means es la que mejor calca la de los datos reales; el reto persistente en los tres modelos es la frontera difusa entre STAR y GALAXY.</p>
+    </div>
+
+    <div class="callout-panel wide" style="margin-top:1.6em;">
+      <h3 style="margin-top:0;">Diagnóstico y conclusión clave (Notebook 04)</h3>
+      <table class="mini-table">
+        <tr><td><strong>K-Means</strong></td><td>Accuracy 0.66 &middot; F1 Macro 0.66 &middot; F1 Weighted 0.67 &mdash; mejor equilibrio entre las 3 clases, sobresale en QSO (F1=0.81, Recall 89%).</td></tr>
+        <tr><td><strong>DBSCAN</strong></td><td>Accuracy 0.59 (engañoso por desbalance) &middot; F1 Macro 0.19 &middot; ARI 0.006 &mdash; colapsó casi todo en una megaclase GALAXY; <code>eps</code>/<code>min_samples</code> no ajustados a la alta concentración central del espacio PCA.</td></tr>
+        <tr><td><strong>GMM</strong></td><td>Accuracy 0.63 &middot; F1 Weighted 0.64 &mdash; mejor precisión en GALAXY (0.99), pero criterio muy estricto que reduce el recall.</td></tr>
+        <tr><td><strong>Jerárquico</strong></td><td>Accuracy 0.61 &middot; F1 Macro 0.57 &mdash; aceptable en galaxias y cuásares, pero muy débil identificando estrellas (F1=0.31).</td></tr>
+      </table>
+      <p style="margin-top:1em;">El algoritmo que mejor se adapta a la geometría global del dataset es <strong>K-Means</strong>, segmentando con éxito la mayoría de cuásares y galaxias. La mayor dificultad, compartida por los cuatro modelos, es separar <strong>estrellas de galaxias</strong>, por el alto solapamiento de sus propiedades físicas en las dos primeras componentes principales.</p>
+    </div>
   </div>
 </section>
 
@@ -289,9 +341,9 @@
     <div class="team-grid">
       <div class="team-card"><span class="t-num">00&ndash;01</span><span class="t-name">Javi</span><span class="t-role">Negocio &amp; EDA</span></div>
       <div class="team-card"><span class="t-num">02</span><span class="t-name">Luis</span><span class="t-role">Preprocesamiento</span></div>
-      <div class="team-card"><span class="t-num">03</span><span class="t-name">Isabella</span><span class="t-role">PCA &amp; Selección de K</span></div>
+      <div class="team-card"><span class="t-num">03</span><span class="t-name">Isabela</span><span class="t-role">PCA &amp; Selección de K</span></div>
       <div class="team-card"><span class="t-num">04</span><span class="t-name">Josema</span><span class="t-role">Clustering &amp; Modelo</span></div>
-      <div class="team-card highlight"><span class="t-num">05</span><span class="t-name">Yohanna</span><span class="t-role">Negocio, Demo &amp; Ética</span></div>
+      <div class="team-card"><span class="t-num">05</span><span class="t-name">Yohanna</span><span class="t-role">Negocio, Demo &amp; Ética</span></div>
     </div>
   </div>
 </section>
@@ -306,6 +358,7 @@
 </footer>
 
 <script src="js/vendor/chart.umd.min.js"></script>
+<script src="js/vendor/plotly-gl3d.min.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

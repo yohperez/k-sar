@@ -88,7 +88,7 @@ a{color:inherit;}
   opacity:0.8;
 }
 .hero-inner{position:relative; z-index:1; max-width:760px;}
-.hero-logo{width:260px; height:auto; margin-bottom:0.4em; filter:drop-shadow(0 15px 45px rgba(91,33,182,0.45));}
+.hero-logo{width:260px; height:auto; margin-bottom:1.6em; filter:drop-shadow(0 15px 45px rgba(91,33,182,0.45));}
 .hero-eyebrow{font-family:'JetBrains Mono',monospace; font-size:0.78rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--teal); margin:0 0 0.4em;}
 .hero-title{
   font-size:clamp(3.2rem, 9vw, 6rem); margin:0; letter-spacing:-0.02em;
@@ -97,10 +97,10 @@ a{color:inherit;}
   text-shadow:0 0 60px rgba(145,99,245,0.25);
 }
 .hero-sub{max-width:52ch; margin:0.6em auto 1.6em; color:var(--muted); font-size:1.02rem;}
-.hero-stats{display:flex; justify-content:center; gap:2.2em; flex-wrap:wrap; margin-bottom:2em;}
-.hstat{display:flex; flex-direction:column; align-items:center;}
-.hstat-num{font-family:'Space Grotesk',sans-serif; font-size:1.7rem; color:var(--gold); font-weight:700;}
-.hstat-label{font-size:0.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-top:0.2em;}
+.hero-stats{display:flex; justify-content:center; align-items:flex-start; gap:clamp(0.5em,3vw,2.2em); flex-wrap:nowrap; margin-bottom:2em;}
+.hstat{display:flex; flex-direction:column; align-items:center; flex:1 1 0; min-width:0; max-width:160px;}
+.hstat-num{font-family:'Space Grotesk',sans-serif; font-size:clamp(1rem,4.2vw,1.7rem); color:var(--gold); font-weight:700; white-space:nowrap;}
+.hstat-label{font-size:clamp(0.56rem,2vw,0.7rem); color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-top:0.2em; line-height:1.3;}
 .hero-cta{
   display:inline-block; font-family:'JetBrains Mono',monospace; font-size:0.85rem;
   color:var(--bg); background:linear-gradient(120deg, var(--teal), var(--purple));
@@ -126,6 +126,11 @@ a{color:inherit;}
 
 .split{display:flex; gap:5%; align-items:center; flex-wrap:wrap;}
 .split .col{flex:1; min-width:280px;}
+
+.stat-stack{display:flex; flex-direction:column; gap:1.4em;}
+.stat{display:flex; flex-direction:column;}
+.stat-num{font-family:'Space Grotesk',sans-serif; font-size:2.1rem; color:var(--gold); font-weight:700; line-height:1.1;}
+.stat-label{font-size:0.78rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.04em; margin-top:0.2em;}
 
 .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:1.6em; margin-top:1.8em;}
 .grid-3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:1.4em; margin-top:1.8em;}
@@ -227,10 +232,26 @@ a{color:inherit;}
   background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:1.3em 1em; text-align:center;
   display:flex; flex-direction:column; gap:0.4em;
 }
-.team-card.highlight{border-color:var(--gold); background:linear-gradient(160deg, rgba(232,179,77,0.10), var(--panel));}
 .t-num{font-family:'JetBrains Mono',monospace; color:var(--purple); font-size:0.78rem;}
 .t-name{font-family:'Space Grotesk',sans-serif; font-size:1.15rem; color:var(--chrome);}
 .t-role{font-size:0.76rem; color:var(--muted);}
+
+/* 3D visualization */
+.viz3d-toggle{display:flex; gap:0.6em; margin-bottom:0.9em; flex-wrap:wrap;}
+.viz3d-btn{
+  background:transparent; border:1px solid var(--purple); color:var(--chrome);
+  font-family:'JetBrains Mono',monospace; font-size:0.72rem; padding:0.5em 0.9em; border-radius:20px; cursor:pointer;
+  transition:background .2s, color .2s;
+}
+.viz3d-btn:hover{background:rgba(145,99,245,0.15);}
+.viz3d-btn.active{background:var(--purple); color:#0E1730; font-weight:600; border-color:var(--purple);}
+.plot3d-container{width:100%; height:460px; border-radius:8px; overflow:hidden; background:var(--bg-alt);}
+.plot3d-container--wide{height:680px; background:var(--panel); border:1px solid var(--line);}
+.viz3d-legend{display:flex; flex-wrap:wrap; align-items:center; gap:0.5em 1em; margin-top:0.9em; font-size:0.78rem; color:var(--muted);}
+.viz3d-legend-item{display:inline-flex; align-items:center; gap:0.4em;}
+.viz3d-legend-item i{width:9px; height:9px; border-radius:50%; display:inline-block;}
+.viz3d-legend-sep{color:var(--line);}
+.viz3d-legend-note{flex-basis:100%; font-size:0.72rem; opacity:0.8;}
 
 /* heatmap */
 .heatmap{display:grid; grid-template-columns:repeat(5,1fr); gap:3px; margin-top:0.6em;}

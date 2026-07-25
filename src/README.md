@@ -20,13 +20,28 @@ src/
     ├── index.html
     ├── css/style.css
     ├── js/app.js
-    ├── js/vendor/chart.umd.min.js   # Chart.js autoalojado
+    ├── js/vendor/chart.umd.min.js       # Chart.js autoalojado (gráficos 2D)
+    ├── js/vendor/plotly-gl3d.min.js     # Plotly.js (solo scatter3d) autoalojado, minificado
     ├── fonts/             # Space Grotesk, Inter, JetBrains Mono autoalojadas
     ├── assets/
     │   ├── logo-transparent.png     # logo K-asar con fondo transparente
     │   └── favicon.png
     └── data/dashboard_data.json     # datos reales exportados del pipeline (00-05)
 ```
+
+## Visualización 3D de los clusters
+
+La sección "04 Modelo" incluye un scatter 3D interactivo (arrastrar para
+rotar, scroll para zoom) sobre PC1/PC2/PC3 del mismo espacio PCA usado para
+entrenar K-Means (~80% de la varianza total). Un toggle permite alternar
+entre colorear por **cluster descubierto** o por **clase real** — comparar
+ambas vistas es la forma más directa de ver, visualmente, por qué el ARI es
+moderado: los clusters no calcan exactamente los límites reales, sobre todo
+entre STAR y GALAXY.
+
+Se usa `plotly.js-gl3d-dist` (el build de Plotly que solo incluye trazas
+`scatter3d`, no la librería completa) minificado con `terser` y servido como
+archivo estático — no depende de ningún CDN externo.
 
 ## Correr localmente
 
