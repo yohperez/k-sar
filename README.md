@@ -8,7 +8,7 @@
 
 ## Descripción del Proyecto
 
-Proyecto de segmentación no supervisada para análisis y agrupamiento de datos estelares (astronomía). El objetivo es identificar grupos naturales en el espacio de características espectrales del dataset de clasificación estelar SDSS17.
+Proyecto de segmentación no supervisada para análisis y agrupamiento de datos estelares (astronomía). El objetivo es identificar grupos naturales en el espacio de características espectrales de los objetos y ofrecer una interfaz interactiva para explorar los resultados.
 
 **Características principales:**
 - 📊 **Pipeline completo** de ML: preprocesamiento, reducción de dimensionalidad (PCA), clustering (K-Means)
@@ -20,6 +20,22 @@ Proyecto de segmentación no supervisada para análisis y agrupamiento de datos 
 
 Usamos el dataset **"Stellar Classification Dataset (SDSS17)"** disponible en Kaggle:  
 https://www.kaggle.com/datasets/fedesoriano/stellar-classification-dataset-sdss17
+
+### Datos en producción (actualizados)
+
+La app desplegada en https://k-sar-production.up.railway.app/ utiliza los datos exportados al archivo `src/public/data/dashboard_data.json`. Resumen rápido de los metadatos actuales incorporados en la app (extraído del JSON de producción):
+
+- Total de registros originales: 100000
+- Registros válidos tras limpieza: 99999 (n_invalid_removed: 1)
+- Conteo por clase: GALAXY=59445, STAR=21593, QSO=18961
+- K final empleado en la demo: 3
+- Componentes PCA para explicar ~90% varianza: 4 (var_90 ≈ 0.9036)
+
+Si querés inspeccionar el JSON completo: `src/public/data/dashboard_data.json` (versión incluida en el repo y servida por la app en producción):
+
+https://github.com/yohperez/k-sar/blob/main/src/public/data/dashboard_data.json
+
+> Nota: estos números reflejan el último `dashboard_data.json` exportado y desplegado en Railway. Si actualizás el pipeline (notebooks/), regenerá este JSON con los mismos pasos de preprocesamiento (RobustScaler + PCA al 95% + K-Means) para que la demo reproduzca exactamente el modelo.
 
 ### Configuración local
 
@@ -54,7 +70,7 @@ k-sar/
 │       ├── index.html                          # Dashboard
 │       ├── css/style.css
 │       ├── js/app.js
-│       ├── data/dashboard_data.json            # Datos del modelo
+│       ├── data/dashboard_data.json            # Datos del modelo (usados en producción)
 │       └── assets/
 ├── data/                                       # Datasets (descarga aquí el CSV)
 ├── assets/                                     # Logos y recursos
@@ -64,7 +80,7 @@ k-sar/
 ## Dashboard Interactivo
 
 La app está **completamente funcional** y desplegada en:  
-🔗 https://k-sar-production.up.railway.app/
+🔗 https://k-sar-production-up.railway.app/
 
 ### Características del dashboard:
 - 📊 Visualización interactiva de clusters en 2D (PCA)
@@ -88,7 +104,7 @@ La app se redeploya automáticamente cuando hay cambios en `src/` en la rama `ma
 1. Haz cambios en cualquier archivo dentro de `src/`
 2. Haz push a `main`
 3. Railway detecta el cambio y redeploya automáticamente
-4. En 1-2 minutos, los cambios están disponibles en https://k-sar-production.up.railway.app/
+4. En 1-2 minutos, los cambios están disponibles en https://k-sar-production-up.railway.app/
 
 ## Equipo de Trabajo
 
@@ -134,7 +150,7 @@ La app se redeploya automáticamente cuando hay cambios en `src/` en la rama `ma
 ✅ **Pipeline reproducible** con parámetros documentados  
 ✅ **Datos exportados** en JSON para consumo frontal  
 ✅ **Arquitectura modular** (notebooks + app separados)  
-✅ **CI/CD automático** con Railway  
+✅ **CI/CD automático** con Railway
 
 ## Próximos Pasos
 
