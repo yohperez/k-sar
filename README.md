@@ -8,11 +8,11 @@
 
 ## Descripción del Proyecto
 
-Proyecto de segmentación no supervisada para análisis y agrupamiento de datos estelares (astronomía). El objetivo es identificar grupos naturales en el espacio de características espectrales de los objetos y ofrecer una interfaz interactiva para explorar los resultados.
+Proyecto de segmentación no supervisada para análisis y agrupamiento de datos estelares (astronomía). El objetivo es identificar grupos naturales en el espacio de características espectrales de las estrellas y objetos extragalácticos.
 
 **Características principales:**
 - 📊 **Pipeline completo** de ML: preprocesamiento, reducción de dimensionalidad (PCA), clustering (K-Means)
-- 🎯 **Dashboard interactivo**: visualiza resultados del modelo en tiempo real en el navegador
+- 🎯 **Dashboard interactivo**: visualiza resultados del modelo en tiempo real en el navegador (visualizaciones 2D y 3D)
 - 🚀 **App desplegada**: alojada en Railway con actualización automática desde GitHub
 - 📐 **Reproducibilidad**: todos los parámetros del modelo están documentados y exportados
 
@@ -23,7 +23,7 @@ https://www.kaggle.com/datasets/fedesoriano/stellar-classification-dataset-sdss1
 
 ### Datos en producción (actualizados)
 
-La app desplegada en https://k-sar-production.up.railway.app/ utiliza los datos exportados al archivo `src/public/data/dashboard_data.json`. Resumen rápido de los metadatos actuales incorporados en la app (extraído del JSON de producción):
+La app desplegada en https://k-sar-production.up.railway.app/ utiliza los datos exportados al archivo `src/public/data/dashboard_data.json`. Resumen rápido de los metadatos actuales incorporados en ese JSON:
 
 - Total de registros originales: 100000
 - Registros válidos tras limpieza: 99999 (n_invalid_removed: 1)
@@ -35,7 +35,7 @@ Si querés inspeccionar el JSON completo: `src/public/data/dashboard_data.json` 
 
 https://github.com/yohperez/k-sar/blob/main/src/public/data/dashboard_data.json
 
-> Nota: estos números reflejan el último `dashboard_data.json` exportado y desplegado en Railway. Si actualizás el pipeline (notebooks/), regenerá este JSON con los mismos pasos de preprocesamiento (RobustScaler + PCA al 95% + K-Means) para que la demo reproduzca exactamente el modelo.
+> Nota: estos números reflejan el último `dashboard_data.json` exportado y desplegado en Railway. Si actualizás el pipeline (notebooks/), regenerá este JSON con los mismos pasos de preprocesamiento y exportálo a `src/public/data/dashboard_data.json` para que la app use los nuevos resultados.
 
 ### Configuración local
 
@@ -80,12 +80,12 @@ k-sar/
 ## Dashboard Interactivo
 
 La app está **completamente funcional** y desplegada en:  
-🔗 https://k-sar-production-up.railway.app/
+🔗 https://k-sar-production.up.railway.app/
 
 ### Características del dashboard:
-- 📊 Visualización interactiva de clusters en 2D (PCA)
+- 📊 Visualización interactiva de clusters en 2D (PCA) y 3D (scatter3d sobre PC1/PC2/PC3)
 - 📈 Gráficos de distribución y análisis de características
-- 🎛️ Reproducción del modelo directamente en el navegador
+- 🎛️ Reproducción del modelo directamente en el navegador (los parámetros del scaler, PCA y centros de cluster están exportados en el JSON)
 - 📱 Responsive y sin dependencias externas (CDNs)
 
 ### Correr localmente
@@ -104,7 +104,7 @@ La app se redeploya automáticamente cuando hay cambios en `src/` en la rama `ma
 1. Haz cambios en cualquier archivo dentro de `src/`
 2. Haz push a `main`
 3. Railway detecta el cambio y redeploya automáticamente
-4. En 1-2 minutos, los cambios están disponibles en https://k-sar-production-up.railway.app/
+4. En 1-2 minutos, los cambios están disponibles en https://k-sar-production.up.railway.app/
 
 ## Equipo de Trabajo
 
@@ -139,14 +139,14 @@ La app se redeploya automáticamente cuando hay cambios en `src/` en la rama `ma
 ## Tecnologías
 
 - **Análisis de datos**: Python, Pandas, NumPy, Scikit-learn, Matplotlib, Seaborn
-- **Dashboard**: Node.js, Express, Chart.js, HTML5/CSS3
+- **Dashboard**: Node.js, Express, Chart.js, HTML5/CSS3, Plotly (3D)
 - **Deployment**: Railway (CI/CD automático)
 - **Versionado**: Git & GitHub
 
 ## Mejoras Implementadas
 
 ✅ **App desplegada en producción** con actualizaciones automáticas  
-✅ **Dashboard interactivo** con visualización de clusters en 2D  
+✅ **Dashboard interactivo** con visualización de clusters en 2D y 3D  
 ✅ **Pipeline reproducible** con parámetros documentados  
 ✅ **Datos exportados** en JSON para consumo frontal  
 ✅ **Arquitectura modular** (notebooks + app separados)  
@@ -156,5 +156,4 @@ La app se redeploya automáticamente cuando hay cambios en `src/` en la rama `ma
 
 - [ ] Agregar más análisis ético en la traducción al negocio
 - [ ] Comparar con otros algoritmos de clustering
-- [ ] Mejorar visualizaciones 3D
 - [ ] Agregar endpoints de API para integración
