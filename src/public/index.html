@@ -198,7 +198,7 @@
     <p class="note center">K-Means (K=3) se lleva a producción por su balance entre clases; GMM tiene mejor NMI y precisión en galaxias, Jerárquico el ARI más alto pero falla en estrellas, DBSCAN no encontró estructura real con estos hiperparámetros.</p>
 
     <div class="panel" style="margin-top:1.6em;">
-      <h3>Comparativa 3D ampliada &mdash; Real, GMM, K-Means y Jerárquico, redshift ponderado (&times;44)</h3>
+      <h3>Comparativa 3D ampliada &mdash; Real, GMM, K-Means y Jerárquico, redshift ponderado (&times;4)</h3>
       <p class="cap" style="margin:0 0 0.8em;">Los tres modelos que sí encontraron estructura, lado a lado contra la clase real en PC1&ndash;PC2&ndash;PC3, ponderando el redshift para separar mejor la nube de puntos. DBSCAN queda fuera de esta vista porque colapsó casi todo en una sola megaclase (ARI&asymp;0.006) y no aporta un panel comparable. Arrastrá cada panel para rotarlo de forma independiente; scroll para zoom.</p>
       <div id="plot3dAmpliado" class="plot3d-container plot3d-container--wide" role="img" aria-label="Comparativa 3D de clustering: datos reales, GMM, K-Means y Jerárquico"></div>
       <div class="viz3d-legend" id="viz3dAmpliadoLegend">
@@ -222,8 +222,8 @@
           </ul>
         </div>
         <div class="panel" style="background:var(--bg-alt);">
-          <h3 style="font-size:0.92rem;">Por qué ponderar el redshift &times;44</h3>
-          <p style="font-size:0.85rem; color:var(--muted); margin:0;">El <code>redshift</code> vive en una escala mucho más chica que las magnitudes fotométricas ya escaladas por PCA, así que sin ponderar queda aplastado y aporta poca separación visual. Multiplicarlo por 44 (solo para esta visualización, no para el modelo real) estira ese eje y hace visible cómo QSO se despega del resto gracias, sobre todo, a su redshift típicamente más alto.</p>
+          <h3 style="font-size:0.92rem;">Por qué ponderar el redshift &times;4</h3>
+          <p style="font-size:0.85rem; color:var(--muted); margin:0;">El <code>redshift</code> vive en una escala mucho más chica que las magnitudes fotométricas ya escaladas por PCA, así que sin ponderar queda aplastado y aporta poca separación visual. Multiplicarlo por 4 (solo para esta visualización, no para el modelo real) estira ese eje y hace visible cómo QSO se despega del resto gracias, sobre todo, a su redshift típicamente más alto.</p>
         </div>
       </div>
       <p class="cap" style="margin-top:0.8em;">Comparar los cuatro cuadros confirma el diagnóstico del Notebook 04: la geometría de K-Means es la que mejor calca la de los datos reales; el reto persistente en los tres modelos es la frontera difusa entre STAR y GALAXY.</p>
